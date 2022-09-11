@@ -1,46 +1,201 @@
-// Enemies our player must avoid
-var Enemy = function() {
-    // Variables applied to each of our instances go here,
-    // we've provided one for you to get started
+const CHAR_GIRL = "images/char-cat-girl.png",
+    CHAR_BOY = "images/char-boy.png",
+    START_X = 200,
+    START_Y = 375,
+    MIN_X = 0,
+    MAX_X = 400,
+    MIN_Y = 375,
+    MAX_Y = -25,
+    STEP_X = 100,
+    STEP_Y = 80,
+    HALF_SIZE_X = 50,
+    HALF_SIZE_Y = 40,
+    MIN_SPEED = 400,
+    MAX_SPEED = 700,
+    TIME_TIMEOUT = 200,
+    ALL_X = [
+        MIN_X,
+        MIN_X + STEP_X,
+        MIN_X + STEP_X * 2,
+        MIN_X + STEP_X * 3,
+        MAX_X,
+    ],
+    ENEMIES_Y = [MAX_Y + STEP_Y * 3, MAX_Y + STEP_Y * 2, MAX_Y + STEP_Y];
 
-    // The image/sprite for our enemies, this uses
-    // a helper we've provided to easily load images
-    this.sprite = 'images/enemy-bug.png';
+let winScore = 0,
+    loseScore = 0,
+    allEnemies = [],
+    allRocks = [];
+
+function getNumFromArea(min, max) {
+    return Math.random() * (max - min) + min;
+}
+
+Array.prototype.getNumFromArray = function () {
+    return this[Math.floor(Math.random() * this.length)];
 };
 
-// Update the enemy's position, required method for game
-// Parameter: dt, a time delta between ticks
-Enemy.prototype.update = function(dt) {
-    // You should multiply any movement by the dt parameter
-    // which will ensure the game runs at the same speed for
-    // all computers.
+function changeChar() {
+    const body = document.querySelector("body");
+    body.style.cssText = "background-color: ivory;";
+
+    body.innerHTML = `<div class="choice">
+                    <p class="choice__title">${"Select character"}</p>
+                    <div class="choice__buttons">
+                    <button class="choice__button-boy">${"Boy"}</button>
+                    <button class="choice__button-girl">${"Girl"}</button>
+                    </div>
+                    </div>`;
+
+    const choiceSection = document.querySelector(".choice");
+    choiceSection.style.cssText = "font-family: cursive; margin: 0 auto;";
+
+    const title = document.querySelector(".choice__title");
+    title.style.cssText = "font-size: 1.5vw;";
+
+    const buttonBoy = document.querySelector(".choice__button-boy");
+    buttonBoy.style.cssText =
+        "font-size: 1.1vw; cursor: pointer;  margin-right: 1vw; font-family: cursive;";
+    buttonBoy.addEventListener("click", () => {
+        player.sprite = CHAR_BOY;
+    });
+
+    const buttonGirl = document.querySelector(".choice__button-girl");
+    buttonGirl.style.cssText =
+        "font-size: 1.1vw; cursor: pointer; font-family: cursive;";
+    buttonGirl.addEventListener("click", () => {
+        player.sprite = CHAR_GIRL;
+    });
+}
+
+function showCounter() {
+    alert(`Your score\nWin: ${winScore} Lose: ${loseScore}`);
+}
+
+var Enemy = function (x, y, speed, player) {
+    this.x = x;
+    this.y = y;
+    this.speed = speed;
+    this.sprite = "images/enemy-bug.png";
+    this.player = player;
 };
 
-// Draw the enemy on the screen, required method for game
-Enemy.prototype.render = function() {
+Enemy.prototype.update = function (dt) {
+    this.x += this.speed * dt;
+
+    if (this.x > MAX_X + STEP_X) {
+        this.x = -STEP_X;
+        this.speed = getNumFromArea(MAX_SPEED, MIN_SPEED);
+    }
+
+    if (
+        this.x > player.x - HALF_SIZE_X &&
+        this.x < player.x + HALF_SIZE_X &&
+        this.y > player.y - HALF_SIZE_Y &&
+        this.y < player.y + HALF_SIZE_Y
+    ) {
+        loseScore++;
+        showCounter();
+        main();
+    }
+};
+
+Enemy.prototype.render = function () {
     ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
 };
 
-// Now write your own player class
-// This class requires an update(), render() and
-// a handleInput() method.
+var Player = function (x, y) {
+    this.x = x;
+    this.y = y;
+    this.sprite = CHAR_BOY;
+};
 
+Player.prototype.update = function () {
+    if (this.y == MAX_Y) {
+        winScore++;
+        setTimeout(showCounter, TIME_TIMEOUT);
+        main();
+    }
+};
 
-// Now instantiate your objects.
-// Place all enemy objects in an array called allEnemies
-// Place the player object in a variable called player
+Player.prototype.render = function () {
+    ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
+};
 
+Player.prototype.handleInput = function (keyPress, allRocks) {
+    if (keyPress == "left" && this.x != MIN_X) {
+        this.x -= STEP_X;
+    } else if (keyPress == "up" && this.y != MAX_Y) {
+        let isOutside = false;
 
+        allRocks.forEach((rock) => {
+            if (this.y == rock.y + STEP_Y && this.x == rock.x) {
+                isOutside = true;
+                return isOutside;
+            }
+        });
 
-// This listens for key presses and sends the keys to your
-// Player.handleInput() method. You don't need to modify this.
-document.addEventListener('keyup', function(e) {
+        if (!isOutside) {
+            this.y -= STEP_Y;
+        }
+    } else if (keyPress == "right" && this.x != MAX_X) {
+        this.x += STEP_X;
+    } else if (keyPress == "down" && this.y != MIN_Y) {
+        this.y += STEP_Y;
+    }
+};
+
+var Rock = function (x, y) {
+    this.x = x;
+    this.y = y;
+    this.sprite = "images/Rock.png";
+};
+
+Rock.prototype.render = function () {
+    ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
+};
+
+changeChar();
+const player = new Player();
+
+function main() {
+    player.x = START_X;
+    player.y = START_Y;
+
+    allEnemies = [];
+    allRocks = [];
+
+    ENEMIES_Y.forEach((enemyY) => {
+        enemy = new Enemy(
+            ALL_X.getNumFromArray(),
+            enemyY,
+            getNumFromArea(MAX_SPEED, MIN_SPEED),
+        );
+        allEnemies.push(enemy);
+    });
+
+    const ROCKS_X = [
+        ALL_X.getNumFromArray(),
+        ALL_X.getNumFromArray(),
+        ALL_X.getNumFromArray(),
+        ALL_X.getNumFromArray(),
+    ];
+
+    ROCKS_X.forEach((rockX) => {
+        rock = new Rock(rockX, MAX_Y, player);
+        allRocks.push(rock);
+    });
+}
+
+main();
+
+document.addEventListener("keyup", function (e) {
     var allowedKeys = {
-        37: 'left',
-        38: 'up',
-        39: 'right',
-        40: 'down'
+        37: "left",
+        38: "up",
+        39: "right",
+        40: "down",
     };
 
-    player.handleInput(allowedKeys[e.keyCode]);
+    player.handleInput(allowedKeys[e.keyCode], allRocks);
 });
