@@ -1,3 +1,50 @@
+@import url("https://fonts.googleapis.com/css2?family=Yeseva+One&display=swap");
+
+* {
+    padding: 0;
+    margin: 0;
+}
+
+button {
+    border: none;
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: manipulation;
+}
+
 body {
+    background-color: ghostwhite;
     text-align: center;
+}
+
+.choice {
+    margin: 0 auto;
+}
+
+.choice__title {
+    padding: 1.25rem 0 0.625rem;
+    font-size: 	1.3125rem;
+    font-family: "Yeseva One", cursive;
+    color: rgb(61, 61, 61);
+}
+
+.choice__button {
+    cursor: pointer;
+    font-size: 0,625rem;
+    font-family: "Yeseva One", cursive;
+    color: rgb(61, 61, 61);
+    padding: 0.375rem 0.875rem;
+    border-radius: 0.375rem;
+    background: white;
+    box-shadow: 0 0.03125rem 0.0625rem rgba(0, 0, 0, 0.1);
+}
+
+.choice__button:not(:last-child) {
+    margin-right: 0.9375rem;
+}
+
+.choice__button:focus {
+    box-shadow: 0 0.03125rem 0.0625rem rgba(0, 0, 0, 0.1),
+        0 0 0 0.0625rem rgba(58, 108, 217, 0.5);
+    outline: 0;
 }

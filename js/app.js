@@ -37,32 +37,21 @@ Array.prototype.getNumFromArray = function () {
 
 function changeChar() {
     const body = document.querySelector("body");
-    body.style.cssText = "background-color: ivory;";
 
     body.innerHTML = `<div class="choice">
                     <p class="choice__title">${"Select character"}</p>
                     <div class="choice__buttons">
-                    <button class="choice__button-boy">${"Boy"}</button>
-                    <button class="choice__button-girl">${"Girl"}</button>
+                    <button class="choice__button button-boy">${"Boy"}</button>
+                    <button class="choice__button button-girl">${"Girl"}</button>
                     </div>
                     </div>`;
 
-    const choiceSection = document.querySelector(".choice");
-    choiceSection.style.cssText = "font-family: cursive; margin: 0 auto;";
-
-    const title = document.querySelector(".choice__title");
-    title.style.cssText = "font-size: 1.5vw;";
-
-    const buttonBoy = document.querySelector(".choice__button-boy");
-    buttonBoy.style.cssText =
-        "font-size: 1.1vw; cursor: pointer;  margin-right: 1vw; font-family: cursive;";
+    const buttonBoy = document.querySelector(".button-boy");
     buttonBoy.addEventListener("click", () => {
         player.sprite = CHAR_BOY;
     });
 
-    const buttonGirl = document.querySelector(".choice__button-girl");
-    buttonGirl.style.cssText =
-        "font-size: 1.1vw; cursor: pointer; font-family: cursive;";
+    const buttonGirl = document.querySelector(".button-girl");
     buttonGirl.addEventListener("click", () => {
         player.sprite = CHAR_GIRL;
     });
