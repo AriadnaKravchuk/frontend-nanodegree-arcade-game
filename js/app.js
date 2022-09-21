@@ -184,8 +184,8 @@ function loadGame() {
     ENEMIES_Y.forEach(enemyY => 
         allEnemies.push(
             new Enemy(
-                ALL_X.getNumFromArray(), 
-                enemyY, getNumFromArea(SPEED.MAX, SPEED.MIN)
+                ALL_X.getNumFromArray(), enemyY,
+                getNumFromArea(SPEED.MAX, SPEED.MIN), player
             )
         )
     );
