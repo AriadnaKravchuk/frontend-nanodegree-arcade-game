@@ -105,10 +105,12 @@ Enemy.prototype.render = function () {
     ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
 };
 
-const Player = function (x, y) {
+const Player = function (x, y, allEnemies, allRocks) {
     this.x = x;
     this.y = y;
     this.sprite = SKIN.BOY;
+    this.allEnemies = allEnemies;
+    this.allRocks = allRocks;
 };
 
 Player.prototype.update = function () {
